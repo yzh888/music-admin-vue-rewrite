@@ -17,10 +17,15 @@
 export default {
   name: 'Dashboard',
   data() {
-    return {}
+    return {
+      menu: localStorage.getItem('token'),
+      user: JSON.parse(localStorage.getItem('user')),
+    }
   },
   components: {},
-  created() {},
+  created() {
+    
+  },
   mounted() {
     this.drawChart()
     this.drawChart1()

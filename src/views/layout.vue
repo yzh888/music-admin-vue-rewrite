@@ -38,7 +38,7 @@
        <mu-list-item-action>
         <mu-icon :value="item.icon"></mu-icon>
       </mu-list-item-action>
-      <router-link :to="item.url"><mu-list-item-title>{{item.title}}</mu-list-item-title></router-link>
+      <router-link :to="item.path"><mu-list-item-title>{{item.title}}</mu-list-item-title></router-link>
       </template>
       <template v-else> 
           <mu-list-item-action>
@@ -52,7 +52,7 @@
         <mu-list-item-action>
         <mu-icon class="toggle-icon" size="24" :value="item1.icon"></mu-icon>
       </mu-list-item-action>
-        <router-link :to="item1.url"><mu-list-item-title>{{item1.title}}</mu-list-item-title></router-link>
+        <router-link :to="item1.path"><mu-list-item-title>{{item1.title}}</mu-list-item-title></router-link>
       </mu-list-item>
       </template>
     </mu-list-item>
@@ -69,10 +69,15 @@ export default {
   data () {
     return {
       open: 'send',
-      user: this.$store.state.user,
+      user: {},
       drawer: true,
-      menus: this.$store.state.menuList1,
+      menus: [],
+      name: '',
+      roleId: ''
     }
+  },
+  created() {
+    this.getAdminMenu()
   },
   methods: {
     logout() {
@@ -80,6 +85,35 @@ export default {
       localStorage.removeItem('token')
       this.$store.commit('setUser', null)
       this.$router.push('/login')
+    },
+    
+    getAdminMenu(){
+      this.name = this.$route.query.name
+      this.roleId = this.$route.query.roleId
+      this.axios({
+        method: 'get',
+        url: 'http://localhost:8080/sysRole/list',
+        params: {
+          name: this.name,
+          roleId: this.roleId
+        },
+        headers:{ 
+           'Content-Type':'application/x-www-form-urlencoded',
+          'Authorization': this.$store.state.token
+          },
+      }).then(res => {
+        // this.user = res.data.data.user
+        // this.menus = res.data.data.permissions
+        let data = res.data.data
+        localStorage.setItem('user', JSON.stringify(data.user))
+        localStorage.setItem('menuList', JSON.stringify(data.permissions))
+        this.user = JSON.parse(localStorage.getItem('user'))
+        this.menus = JSON.parse(localStorage.getItem('menuList'))
+        console.log(this.menus)
+        this.$store.commit('setUser', this.user)
+        this.$store.commit('setMenuList', this.menus)
+      })
+
     }
   }
 }
