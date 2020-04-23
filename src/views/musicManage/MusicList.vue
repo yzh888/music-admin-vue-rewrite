@@ -1,6 +1,7 @@
 <template>
   <div style="width: 100%">
     <div>
+      <!-- 按钮 -->
       <mu-button
         color="primary"
         class="btn"
@@ -11,6 +12,7 @@
       <mu-text-field v-model="keywords" placeholder="search"></mu-text-field>
       <mu-button color="success" @click="search()">点击搜索</mu-button>
     </div>
+    <!-- 左边歌单表 -->
     <div style="display:flex;padding: 20px 20px">
       <div class="s-l-table">
         <mu-data-table :columns="columns" :data="songList" class="s-l-table-content">
@@ -22,6 +24,7 @@
           </template>
         </mu-data-table>
         <mu-flex justify-content="center">
+          <!-- 每页显示的数量 -->
           <span style="margin-top: 10px">每页显示：</span>
           <mu-select style="width:70px" v-model="size" full-widt >
             <mu-option
@@ -31,31 +34,28 @@
               :value="option"
             ></mu-option>
           </mu-select>
+          <!-- 分页 -->
           <mu-pagination raised circle :total="totalPage" :current.sync="currentPage"></mu-pagination>
         </mu-flex>
       </div>
+      <!-- 右边类型表格 -->
       <div class="s-l-tab">
         <div>
+          <!-- tab标签头 -->
           <mu-tabs :value.sync="active" class="tabs">
             <mu-tab v-for="(type, index1) in types" :key="index1">{{type.type}}</mu-tab>
           </mu-tabs>
         </div>
         <div>
           <div class="demo-text" v-for="(type, index2) in types" :key="index2" style=" overflow: hidden">
+            <!-- 定义表头信息 -->
             <mu-data-table
               :columns="columns"
               :data="type.child"
               class="childTable"
               v-if="active == index2"
             >
-              <!-- <template slot="th" slot-scope="column">
-        <mu-tooltip :content="column.title">
-          <mu-flex align-items="center" justify-content="center">
-            <span>{{column.title}}</span>
-            <mu-icon class="mu-table-sort-icon" value="arrow_drop_down"></mu-icon>
-          </mu-flex>
-        </mu-tooltip>
-              </template>-->
+            <!-- 定义表格内的数据 -->
               <template slot-scope="scope" >
                 <td class="is-left">{{scope.row.song_list_id}}</td>
                 <td class="is-left">{{scope.row.song_list_name}}</td>
@@ -164,6 +164,7 @@ export default {
       this.axios({
         method: 'get',
         url: 'http://localhost:8080/songList/blur',
+        // 问号带参，表单提交
         params: {
           field: this.keywords
         },
@@ -194,8 +195,10 @@ export default {
           'Content-Type': 'application/x-www-form-urlencoded',
         }
       }).then((res) => {
+        //获取各种类型及属于该类型的歌单数据
         this.types = res.data.data
         console.log(this.types)
+        //取出第一种类型的所有歌单，作为默认tab页上显示的数据
         this.typeChildSongList = this.types[0].child
         console.log(this.typeChildSongList)
       })
