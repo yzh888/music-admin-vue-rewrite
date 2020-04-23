@@ -18,6 +18,9 @@ import 'vue-material/dist/theme/default-dark.css'
 Vue.use(VueMaterial)
 Vue.use(MuseUI);
 
+import global_ from './utils/Global'
+Vue.prototype.GLOBAL = global_
+
 import echarts from "echarts";
 Vue.prototype.$echarts = echarts;
 // 导航钩子，全局钩子
@@ -42,6 +45,22 @@ router.beforeEach((to, from, next) => {
     next()
   }
 })
+
+//全局请求拦截
+axios.interceptors.request.use((config) => {
+  //请求的接口不是登录和验证码接口
+  if (['/sysAdmin/login', '/captcha'].indexOf(config.url) === -1) {
+    const token = localStorage.getItem('token')
+    const roleId = localStorage.getItem('roleId')
+    if (token) {
+      //添加统一请求头
+      config.headers.Authorization = token
+      config.headers.roleId = roleId
+    }
+  }
+  return config
+})
+
 
 new Vue({
   router,

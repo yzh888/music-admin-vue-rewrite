@@ -69,15 +69,15 @@ export default {
   data () {
     return {
       open: 'send',
-      user: {},
+      user:JSON.parse(localStorage.getItem('user')),
       drawer: true,
       menus: [],
-      name: '',
       roleId: ''
     }
   },
   created() {
     this.getAdminMenu()
+
   },
   methods: {
     logout() {
@@ -88,29 +88,25 @@ export default {
     },
     
     getAdminMenu(){
-      this.name = this.$route.query.name
       this.roleId = this.$route.query.roleId
       this.axios({
         method: 'get',
         url: 'http://localhost:8080/sysRole/list',
         params: {
-          name: this.name,
           roleId: this.roleId
         },
         headers:{ 
            'Content-Type':'application/x-www-form-urlencoded',
-          'Authorization': this.$store.state.token
+          'Authorization': localStorage.getItem('token')
           },
       }).then(res => {
         // this.user = res.data.data.user
         // this.menus = res.data.data.permissions
         let data = res.data.data
-        localStorage.setItem('user', JSON.stringify(data.user))
+        
         localStorage.setItem('menuList', JSON.stringify(data.permissions))
-        this.user = JSON.parse(localStorage.getItem('user'))
         this.menus = JSON.parse(localStorage.getItem('menuList'))
         console.log(this.menus)
-        this.$store.commit('setUser', this.user)
         this.$store.commit('setMenuList', this.menus)
       })
 
@@ -129,7 +125,7 @@ export default {
   width: 220px;
   background-color: white;
   box-shadow: -3px 5px 1px 5px white;
-  height: 85%;
+  height: 600px;
   margin: 20px 20px;
 }
 
