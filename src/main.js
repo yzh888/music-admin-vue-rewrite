@@ -6,23 +6,28 @@ import axios from 'axios'
 import VueAxios from 'vue-axios'
 Vue.use(VueAxios, axios)
 Vue.config.productionTip = false
-import qs from 'qs';
-Vue.prototype.qs = qs;
-import MuseUI from 'muse-ui';
-import 'muse-ui/dist/muse-ui.css';
+import qs from 'qs'
+Vue.prototype.qs = qs
+import MuseUI from 'muse-ui'
+import 'muse-ui/dist/muse-ui.css'
 
 import VueMaterial from 'vue-material'
 import 'vue-material/dist/vue-material.min.css'
 import 'vue-material/dist/theme/default-dark.css'
 
+import Vuetify from 'vuetify'
+import 'vuetify/dist/vuetify.min.css'
+
+Vue.use(Vuetify)
 Vue.use(VueMaterial)
-Vue.use(MuseUI);
+Vue.use(MuseUI)
 
 import global_ from './utils/Global'
 Vue.prototype.GLOBAL = global_
 
-import echarts from "echarts";
-Vue.prototype.$echarts = echarts;
+import echarts from 'echarts'
+import vuetify from './plugins/vuetify';
+Vue.prototype.$echarts = echarts
 // 导航钩子，全局钩子
 router.beforeEach((to, from, next) => {
   let token = localStorage.getItem('token')
@@ -57,13 +62,14 @@ axios.interceptors.request.use((config) => {
       config.headers.Authorization = token
       config.headers.roleId = roleId
     }
+    config.baseURL = 'http://localhost:8080'
   }
   return config
 })
 
-
 new Vue({
   router,
   store,
-  render: h => h(App)
+  vuetify,
+  render: (h) => h(App)
 }).$mount('#app')

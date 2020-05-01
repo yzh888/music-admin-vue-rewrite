@@ -1,16 +1,14 @@
 <template>
   <div>
-       <h2>皮肤</h2>
+    <h2>皮肤</h2>
   </div>
 </template>
 
 <script>
 export default {
- name: 'Color',
+  name: 'Color',
   data() {
-    return {
-
-    }
+    return {}
   },
   components: {},
   created() {},
@@ -20,6 +18,4 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

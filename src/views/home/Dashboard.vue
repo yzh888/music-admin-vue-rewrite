@@ -1,14 +1,65 @@
 <template>
-  <div style="width: 100%">
+  <div style="width: 100%;">
     <div class="show-echart">
       <div ref="echart" class="plays-sort"></div>
       <div ref="echart1" class="songs"></div>
     </div>
     <div class="counts">
-        <md-content class="md-primary">新增用户量</md-content>
-        <md-content class="md-accent">昨日访问量</md-content>
-        <md-content class="md-primary">新增歌曲量</md-content>
-        <md-content class="md-accent">G.E.M.邓紫棋</md-content>
+      <v-card class="mx-auto" max-width="400">
+        <v-list-item two-line>
+          <v-list-item-content>
+            <v-list-item-title class="headline">San Francisco</v-list-item-title>
+            <v-list-item-subtitle>Mon, 12:30 PM, Mostly sunny</v-list-item-subtitle>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-card-text>
+          <v-row align="center">
+            <v-col class="display-3" cols="6">
+              23&deg;C
+            </v-col>
+            <v-col cols="6">
+              <v-img src="https://cdn.vuetifyjs.com/images/cards/sun.png" alt="Sunny image" width="92"></v-img>
+            </v-col>
+          </v-row>
+        </v-card-text>
+
+        <v-list-item>
+          <v-list-item-icon>
+            <v-icon>mdi-send</v-icon>
+          </v-list-item-icon>
+          <v-list-item-subtitle>23 km/h</v-list-item-subtitle>
+        </v-list-item>
+
+        <v-list-item>
+          <v-list-item-icon>
+            <v-icon>mdi-cloud-download</v-icon>
+          </v-list-item-icon>
+          <v-list-item-subtitle>48%</v-list-item-subtitle>
+        </v-list-item>
+
+        <v-slider v-model="time" :max="6" :tick-labels="labels" class="mx-4" ticks></v-slider>
+
+        <v-list class="transparent">
+          <v-list-item v-for="item in forecast" :key="item.day">
+            <v-list-item-title>{{ item.day }}</v-list-item-title>
+
+            <v-list-item-icon>
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-item-icon>
+
+            <v-list-item-subtitle class="text-right">
+              {{ item.temp }}
+            </v-list-item-subtitle>
+          </v-list-item>
+        </v-list>
+
+        <v-divider></v-divider>
+
+        <v-card-actions>
+          <v-btn text>Full Report</v-btn>
+        </v-card-actions>
+      </v-card>
     </div>
   </div>
 </template>
@@ -20,12 +71,17 @@ export default {
     return {
       menu: localStorage.getItem('token'),
       user: JSON.parse(localStorage.getItem('user')),
+      labels: ['SU', 'MO', 'TU', 'WED', 'TH', 'FR', 'SA'],
+      time: 0,
+      forecast: [
+        { day: 'Tuesday', icon: 'mdi-white-balance-sunny', temp: '24\xB0/12\xB0' },
+        { day: 'Wednesday', icon: 'mdi-white-balance-sunny', temp: '22\xB0/14\xB0' },
+        { day: 'Thursday', icon: 'mdi-cloud', temp: '25\xB0/15\xB0' }
+      ]
     }
   },
   components: {},
-  created() {
-    
-  },
+  created() {},
   mounted() {
     this.drawChart()
     this.drawChart1()
@@ -36,35 +92,50 @@ export default {
 
       // 指定图表的配置项和数据
       var option = {
-        backgroundColor: '#ffffff',
-        legend: {},
-        tooltip: {},
-        dataset: {
-          dimensions: ['product', '2016', '2017'],
-          source: [
-            { product: 'Matcha Latte', '2016': 85.8, '2017': 93.7 },
-            { product: 'Milk Tea', '2016': 73.4, '2017': 55.1 },
-            { product: 'Cheese Cocoa', '2016': 65.2, '2017': 82.5 },
-            { product: 'Walnut Brownie', '2016': 53.9, '2017': 39.1 }
-          ]
+        title: {
+          text: '基础雷达图'
         },
-        xAxis: { type: 'category' },
-        yAxis: {},
-        // Declare several bar series, each will be mapped
-        // to a column of dataset.source by default.
-        series: [
-          {
-            type: 'bar',
-            itemStyle: {
-              normal: {
-                color: '#4ad2ff'
-              }
+        tooltip: {},
+        legend: {
+          data: ['预算分配（Allocated Budget）', '实际开销（Actual Spending）']
+        },
+        radar: {
+          // shape: 'circle',
+          name: {
+            textStyle: {
+              color: '#fff',
+              backgroundColor: '#999',
+              borderRadius: 3,
+              padding: [3, 5]
             }
           },
-          { type: 'bar' }
+          indicator: [
+            { name: '流量（sales）', max: 6500 },
+            { name: '管理（Administration）', max: 16000 },
+            { name: '信息技术（Information Techology）', max: 30000 },
+            { name: '客服（Customer Support）', max: 38000 },
+            { name: '研发（Development）', max: 52000 },
+            { name: '市场（Marketing）', max: 25000 }
+          ]
+        },
+        series: [
+          {
+            name: '预算 vs 开销（Budget vs spending）',
+            type: 'radar',
+            // areaStyle: {normal: {}},
+            data: [
+              {
+                value: [4300, 10000, 28000, 35000, 50000, 19000],
+                name: '预算分配（Allocated Budget）'
+              },
+              {
+                value: [5000, 14000, 28000, 31000, 42000, 21000],
+                name: '实际开销（Actual Spending）'
+              }
+            ]
+          }
         ]
       }
-
       // 使用刚指定的配置项和数据显示图表。
       myChart.setOption(option)
     },
@@ -132,7 +203,7 @@ export default {
 
             animationType: 'scale',
             animationEasing: 'elasticOut',
-            animationDelay: function(idx) {
+            animationDelay: function() {
               return Math.random() * 200
             }
           }
@@ -174,11 +245,11 @@ export default {
 }
 
 .md-content {
-    flex: 0 0 24%;
-    height: 100px;
-    display: inline-flex;
-    font-size: 36px;
-    justify-content: center;
-    align-items: center;
-  }
+  flex: 0 0 24%;
+  height: 100px;
+  display: inline-flex;
+  font-size: 36px;
+  justify-content: center;
+  align-items: center;
+}
 </style>
